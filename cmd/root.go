@@ -26,6 +26,8 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"regexp"
+	"sort"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -33,20 +35,21 @@ import (
 
 // rootCmd represents the base command when called without any subcommands
 var (
-	source, target string
-	rootCmd        = &cobra.Command{
+	source, target, pattern string
+	rootCmd                 = &cobra.Command{
 		Use:   "filer",
-		Short: "filer - Interactive file sorting REPL: keep or delete files one-by-one",
-		Long: `Usage: filer [-s SOURCE] [-t TARGET]
+		Short: "filer - Interactive file sorting REPL: keep or delete files using regex patterns",
+		Long: `Usage: filer [-s SOURCE] [-t TARGET] [-p REGEX]
 
-	Interactive file sorting REPL
+	Interactive file sorting REPL with regex filtering
 
 	Options:
-	-s, --source DIR  Source directory (default: current)
-	-t, --target DIR  Target directory for kept files (default: keep in place)
+	-s, --source DIR    Source directory (default: current)
+	-t, --target DIR    Target directory for kept files (default: keep in place)
+	-p, --pattern REGEX Regular expression pattern to filter files
 
 	Commands: [K]eep, [D]elete, [Q]uit
-	Example: filer -s ~/Downloads -t ~/Keep`,
+	Example: filer -s ~/Downloads -p "\.jpg$" -t ./images`,
 		// Uncomment the following line if your bare application
 		// has an action associated with it:
 		Run: func(cmd *cobra.Command, args []string) {
@@ -54,6 +57,14 @@ var (
 			if err != nil {
 				fmt.Println(err)
 				return
+			}
+
+			if pattern != "" {
+				entries, err = filterAndSortFiles(entries)
+				if err != nil {
+					fmt.Println(err)
+					return
+				}
 			}
 
 			if target != "" {
@@ -125,6 +136,7 @@ func init() {
 	//rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	rootCmd.Flags().StringVarP(&source, "source", "s", "./", "Source directory (default: current)")
 	rootCmd.Flags().StringVarP(&target, "target", "t", "", "Target directory for kept files (default: keep in place)")
+	rootCmd.Flags().StringVarP(&pattern, "pattern", "p", "", "Regular expression pattern to filter files")
 }
 
 func moveFileSafe(sourcePath, destPath string) error {
@@ -168,4 +180,27 @@ func copyAndRemove(sourcePath, destPath string) error {
 	}
 
 	return os.Remove(sourcePath)
+}
+
+func filterAndSortFiles(entries []os.DirEntry) ([]os.DirEntry, error) {
+	var filtered []os.DirEntry
+
+	for _, entry := range entries {
+		if entry.IsDir() {
+			continue
+		}
+		matched, err := regexp.MatchString(pattern, entry.Name())
+		if err != nil {
+			return nil, err
+		}
+		if matched {
+			filtered = append(filtered, entry)
+		}
+	}
+
+	sort.Slice(filtered, func(i, j int) bool {
+		return filtered[i].Name() < filtered[j].Name()
+	})
+
+	return filtered, nil
 }
