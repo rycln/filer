@@ -22,28 +22,83 @@ THE SOFTWARE.
 package cmd
 
 import (
+	"bufio"
+	"fmt"
+	"io"
 	"os"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
 
 // rootCmd represents the base command when called without any subcommands
-var rootCmd = &cobra.Command{
-	Use:   "filer",
-	Short: "filer - Interactive file sorting REPL: keep or delete files one-by-one",
-	Long: `Usage: filer [source] [target]
+var (
+	source, target string
+	rootCmd        = &cobra.Command{
+		Use:   "filer",
+		Short: "filer - Interactive file sorting REPL: keep or delete files one-by-one",
+		Long: `Usage: filer [-s SOURCE] [-t TARGET]
 
-Interactive file sorting REPL - process files with keep/delete decisions.
+	Interactive file sorting REPL
 
-Arguments:
-  source  Source directory (default: .)
-  target  Target directory for kept files (default: keep in place)
+	Options:
+	-s, --source DIR  Source directory (default: current)
+	-t, --target DIR  Target directory for kept files (default: keep in place)
 
-Commands: [K]eep, [D]elete, [Q]uit`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	Run: func(cmd *cobra.Command, args []string) {},
-}
+	Commands: [K]eep, [D]elete, [Q]uit
+	Example: filer -s ~/Downloads -t ~/Keep`,
+		// Uncomment the following line if your bare application
+		// has an action associated with it:
+		Run: func(cmd *cobra.Command, args []string) {
+			entries, err := os.ReadDir(source)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+
+			if target != "" {
+				err := os.MkdirAll(target, 0755)
+				if err != nil {
+					fmt.Println(err)
+					return
+				}
+			}
+
+			scanner := bufio.NewScanner(os.Stdin)
+			for _, entry := range entries {
+				fmt.Printf("Name: %s\n[K]eep, [D]elete, [Q]uit?", entry.Name())
+				if !scanner.Scan() {
+					break
+				}
+
+				input := strings.TrimSpace(scanner.Text())
+				if input == "" {
+					continue
+				}
+
+				switch input {
+				case "q", "Q":
+					return
+				case "k", "K":
+					if target == "" {
+						continue
+					}
+					err := moveFileSafe(source+"/"+entry.Name(), target+"/"+entry.Name())
+					if err != nil {
+						fmt.Println(err)
+						return
+					}
+				case "d", "D":
+					err := os.Remove(source + "/" + entry.Name())
+					if err != nil {
+						fmt.Println(err)
+						return
+					}
+				}
+			}
+		},
+	}
+)
 
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
@@ -63,5 +118,50 @@ func init() {
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	//rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	rootCmd.Flags().StringVarP(&source, "source", "s", "./", "Source directory (default: current)")
+	rootCmd.Flags().StringVarP(&target, "target", "t", "", "Target directory for kept files (default: keep in place)")
+}
+
+func moveFileSafe(sourcePath, destPath string) error {
+	if _, err := os.Stat(sourcePath); os.IsNotExist(err) {
+		return fmt.Errorf("file does not exist: %s", sourcePath)
+	}
+
+	err := os.Rename(sourcePath, destPath)
+	if err == nil {
+		return nil
+	}
+
+	return copyAndRemove(sourcePath, destPath)
+}
+
+func copyAndRemove(sourcePath, destPath string) error {
+	sourceFile, err := os.Open(sourcePath)
+	if err != nil {
+		return err
+	}
+	defer sourceFile.Close()
+
+	destFile, err := os.Create(destPath)
+	if err != nil {
+		return err
+	}
+	defer destFile.Close()
+
+	_, err = io.Copy(destFile, sourceFile)
+	if err != nil {
+		os.Remove(destPath)
+		return err
+	}
+
+	sourceInfo, _ := sourceFile.Stat()
+	destInfo, _ := destFile.Stat()
+
+	if sourceInfo.Size() != destInfo.Size() {
+		os.Remove(destPath)
+		return fmt.Errorf("the file sizes do not match")
+	}
+
+	return os.Remove(sourcePath)
 }
