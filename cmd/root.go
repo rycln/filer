@@ -66,6 +66,10 @@ var (
 
 			scanner := bufio.NewScanner(os.Stdin)
 			for _, entry := range entries {
+				if entry.IsDir() {
+					continue
+				}
+
 				fmt.Printf("Name: %s\n[K]eep, [D]elete, [Q]uit?", entry.Name())
 				if !scanner.Scan() {
 					break
