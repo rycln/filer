@@ -14,8 +14,8 @@ filer [source_dir] [target_dir]
 
 ## Arguments
 
-source_dir - Directory with files to sort (default: current directory)
-target_dir - Directory where kept files will be moved (default: files remain in place)
+- source_dir - Directory with files to sort (default: current directory)
+- target_dir - Directory where kept files will be moved (default: files remain in place)
 
 ## Controls
 
