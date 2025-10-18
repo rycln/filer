@@ -9,13 +9,14 @@ Interactive REPL utility for quick file sorting through a "keep or delete" proce
 ## Usage
 
 ```bash
-filer [source_dir] [target_dir]
+filer [-s SOURCE_DIR] [-t TARGET_DIR] [-p REGEX_PATTERN]
 ```
 
 ## Arguments
 
-- source_dir - Directory with files to sort (default: current directory)
-- target_dir - Directory where kept files will be moved (default: files remain in place)
+- -s, --source SOURCE_DIR - Directory with files to sort (default: current directory)
+- -t, --target TARGET_DIR - Directory where kept files will be moved (default: files remain in place)
+- -p, --pattern REGEX_PATTERN - Regular expression to filter files (e.g., "\.jpg$", "^2024-", ".*\.(jpg|png)$")
 
 ## Controls
 
