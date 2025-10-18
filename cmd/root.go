@@ -31,6 +31,7 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
+	"golang.org/x/term"
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -75,26 +76,33 @@ var (
 				}
 			}
 
-			scanner := bufio.NewScanner(os.Stdin)
+			oldState, err := term.MakeRaw(int(os.Stdin.Fd()))
+			if err != nil {
+				fmt.Println("Error setting terminal to raw mode:", err)
+				return
+			}
+			defer term.Restore(int(os.Stdin.Fd()), oldState)
+
+			reader := bufio.NewReader(os.Stdin)
+
 			for _, entry := range entries {
 				if entry.IsDir() {
 					continue
 				}
 
-				fmt.Printf("Name: %s\n[K]eep, [D]elete, [Q]uit?", entry.Name())
-				if !scanner.Scan() {
-					break
-				}
+				fmt.Print("\033[2K\r")
+				fmt.Printf("Name: %s [K]eep, [D]elete, [Q]uit?", entry.Name())
 
-				input := strings.TrimSpace(scanner.Text())
-				if input == "" {
-					continue
-				}
-
-				switch input {
-				case "q", "Q":
+				char, _, err := reader.ReadRune()
+				if err != nil {
+					fmt.Println(err)
 					return
-				case "k", "K":
+				}
+
+				switch strings.ToLower(string(char)) {
+				case "q":
+					return
+				case "k":
 					if target == "" {
 						continue
 					}
@@ -103,12 +111,14 @@ var (
 						fmt.Println(err)
 						return
 					}
-				case "d", "D":
+				case "d":
 					err := os.Remove(source + "/" + entry.Name())
 					if err != nil {
 						fmt.Println(err)
 						return
 					}
+				default:
+					continue
 				}
 			}
 		},
