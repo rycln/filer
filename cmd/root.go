@@ -41,16 +41,16 @@ var (
 		Use:   "filer",
 		Short: "filer - Interactive file sorting REPL: keep or delete files using regex patterns",
 		Long: `Usage: filer [-s SOURCE] [-t TARGET] [-p REGEX]
+		
+		Interactive file sorting REPL with regex filtering
 
-	Interactive file sorting REPL with regex filtering
+		Options:
+		-s, --source DIR    Source directory (default: current)
+		-t, --target DIR    Target directory for kept files (default: keep in place)
+		-p, --pattern REGEX Regular expression pattern to filter files
 
-	Options:
-	-s, --source DIR    Source directory (default: current)
-	-t, --target DIR    Target directory for kept files (default: keep in place)
-	-p, --pattern REGEX Regular expression pattern to filter files
-
-	Commands: [K]eep, [D]elete, [Q]uit
-	Example: filer -s ~/Downloads -p "\.jpg$" -t ./images`,
+		Commands: [K]eep, [D]elete, [Q]uit
+		Example: filer -s ~/Downloads -p "\.jpg$" -t ./images`,
 		// Uncomment the following line if your bare application
 		// has an action associated with it:
 		Run: func(cmd *cobra.Command, args []string) {
@@ -85,13 +85,14 @@ var (
 
 			reader := bufio.NewReader(os.Stdin)
 
-			for _, entry := range entries {
-				if entry.IsDir() {
+			for i := 0; i < len(entries); {
+				if entries[i].IsDir() {
+					i++
 					continue
 				}
 
 				fmt.Print("\033[2K\r")
-				fmt.Printf("Name: %s [K]eep, [D]elete, [Q]uit?", entry.Name())
+				fmt.Printf("Name: %s [K]eep, [D]elete, [S]kip, [Q]uit?", entries[i].Name())
 
 				char, _, err := reader.ReadRune()
 				if err != nil {
@@ -102,17 +103,20 @@ var (
 				switch strings.ToLower(string(char)) {
 				case "q":
 					return
+				case "s":
+					i++
+					continue
 				case "k":
 					if target == "" {
 						continue
 					}
-					err := moveFileSafe(source+"/"+entry.Name(), target+"/"+entry.Name())
+					err := moveFileSafe(source+"/"+entries[i].Name(), target+"/"+entries[i].Name())
 					if err != nil {
 						fmt.Println(err)
 						return
 					}
 				case "d":
-					err := os.Remove(source + "/" + entry.Name())
+					err := os.Remove(source + "/" + entries[i].Name())
 					if err != nil {
 						fmt.Println(err)
 						return
@@ -120,6 +124,8 @@ var (
 				default:
 					continue
 				}
+
+				i++
 			}
 		},
 	}
