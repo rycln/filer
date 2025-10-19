@@ -109,6 +109,7 @@ var (
 					continue
 				case "k":
 					if target == "" {
+						i++
 						continue
 					}
 					err := moveFileSafe(source+"/"+entries[i].Name(), target+"/"+entries[i].Name())
