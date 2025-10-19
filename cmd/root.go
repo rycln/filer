@@ -91,8 +91,8 @@ var (
 					continue
 				}
 
-				fmt.Print("\033[2K\r\033[1A\033[2K\r\033[1A\033[2K\r\033[1A\033[2K\r")
-				fmt.Printf("\nFile: %s", entries[i].Name())
+				fmt.Printf("\n[%d/%d]", i+1, len(entries))
+				fmt.Printf("\n\rFile: %s", entries[i].Name())
 				fmt.Print("\n\n\r[K]eep, [D]elete, [S]kip, [Q]uit? ")
 
 				char, _, err := reader.ReadRune()
@@ -100,6 +100,8 @@ var (
 					fmt.Println(err)
 					return
 				}
+
+				fmt.Print("\033[2K\r\033[1A\033[2K\r\033[1A\033[2K\r\033[1A\033[2K\r\033[1A\033[2K\r")
 
 				switch strings.ToLower(string(char)) {
 				case "q":
