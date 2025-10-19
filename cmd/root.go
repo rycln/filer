@@ -91,8 +91,9 @@ var (
 					continue
 				}
 
-				fmt.Print("\033[2K\r")
-				fmt.Printf("Name: %s [K]eep, [D]elete, [S]kip, [Q]uit?", entries[i].Name())
+				fmt.Print("\033[2K\r\033[1A\033[2K\r\033[1A\033[2K\r\033[1A\033[2K\r")
+				fmt.Printf("\nFile: %s", entries[i].Name())
+				fmt.Print("\n\n\r[K]eep, [D]elete, [S]kip, [Q]uit? ")
 
 				char, _, err := reader.ReadRune()
 				if err != nil {
