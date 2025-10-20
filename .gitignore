@@ -12,8 +12,8 @@
 *.out
 
 # Binaries
-main
-filer
+cmd/filer/main
+cmd/filer/filer
 
 # Dependency directories (remove the comment below to include it)
 vendor/
