@@ -1,9 +1,5 @@
 package tui
 
-import (
-	tea "github.com/charmbracelet/bubbletea"
-)
-
 type state int
 
 const (
@@ -11,6 +7,11 @@ const (
 	ProcessingState
 	EndState
 	ErrorState
+)
+
+type (
+	SuccessMsg struct{}
+	ErrorMsg   struct{ Err error }
 )
 
 type FileManager interface {
@@ -34,8 +35,4 @@ func InitialRootModel(names []string, manager FileManager) Model {
 		names:   names,
 		manager: manager,
 	}
-}
-
-func (m Model) Init() tea.Cmd {
-	return nil
 }
