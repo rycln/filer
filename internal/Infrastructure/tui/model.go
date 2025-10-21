@@ -17,8 +17,8 @@ type (
 )
 
 type FileManager interface {
-	KeepFile(filename string) error
-	DeleteFile(filename string) error
+	Keep(string) error
+	Delete(string) error
 }
 
 type Model struct {

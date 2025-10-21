@@ -51,7 +51,7 @@ func handleFileManageState(m Model, msg tea.Msg) (Model, tea.Cmd) {
 
 func (m Model) keep() tea.Cmd {
 	return func() tea.Msg {
-		err := m.manager.KeepFile(m.batch.CurrentFile())
+		err := m.manager.Keep(m.batch.CurrentFile())
 		if err != nil {
 			return ErrorMsg{
 				Err: err,
@@ -64,7 +64,7 @@ func (m Model) keep() tea.Cmd {
 
 func (m Model) delete() tea.Cmd {
 	return func() tea.Msg {
-		err := m.manager.DeleteFile(m.batch.CurrentFile())
+		err := m.manager.Delete(m.batch.CurrentFile())
 		if err != nil {
 			return ErrorMsg{
 				Err: err,
