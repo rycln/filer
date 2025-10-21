@@ -1,22 +1,22 @@
 package domain
 
 type FileBatch struct {
-	files []string
-	idx   int
+	filenames []string
+	idx       int
 }
 
 func NewFileBatch(files []string) *FileBatch {
 	return &FileBatch{
-		files: files,
-		idx:   0,
+		filenames: files,
+		idx:       0,
 	}
 }
 
 func (b *FileBatch) CurrentFile() string {
-	if b.idx >= len(b.files) {
+	if b.idx >= len(b.filenames) {
 		return ""
 	}
-	return b.files[b.idx]
+	return b.filenames[b.idx]
 }
 
 func (b *FileBatch) NextFile() {
@@ -24,7 +24,7 @@ func (b *FileBatch) NextFile() {
 }
 
 func (b *FileBatch) IsComplete() bool {
-	return b.idx >= len(b.files)
+	return b.idx >= len(b.filenames)
 }
 
 func (b *FileBatch) Progress() int {
@@ -32,5 +32,5 @@ func (b *FileBatch) Progress() int {
 }
 
 func (b *FileBatch) TotalFiles() int {
-	return len(b.files)
+	return len(b.filenames)
 }
