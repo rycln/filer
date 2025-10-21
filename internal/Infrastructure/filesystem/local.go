@@ -89,3 +89,21 @@ func (l *Local) DeleteFile(filename string) error {
 
 	return nil
 }
+
+func (l *Local) GetFilenames() ([]string, error) {
+	entries, err := os.ReadDir(l.source)
+	if err != nil {
+		return nil, err
+	}
+
+	var filenames []string
+
+	for _, entry := range entries {
+		if entry.IsDir() {
+			continue
+		}
+		filenames = append(filenames, entry.Name())
+	}
+
+	return filenames, nil
+}
