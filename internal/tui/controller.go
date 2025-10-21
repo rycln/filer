@@ -40,7 +40,7 @@ func handleFileManageState(m Model, msg tea.Msg) (Model, tea.Cmd) {
 				m.state = ProcessingState
 				return m, m.delete()
 			case "s":
-				m.idx++
+				m.batch.NextFile()
 				return m, nil
 			}
 		}
@@ -51,7 +51,7 @@ func handleFileManageState(m Model, msg tea.Msg) (Model, tea.Cmd) {
 
 func (m Model) keep() tea.Cmd {
 	return func() tea.Msg {
-		err := m.manager.KeepFile(m.names[m.idx])
+		err := m.manager.KeepFile(m.batch.CurrentFile())
 		if err != nil {
 			return ErrorMsg{
 				Err: err,
@@ -64,7 +64,7 @@ func (m Model) keep() tea.Cmd {
 
 func (m Model) delete() tea.Cmd {
 	return func() tea.Msg {
-		err := m.manager.DeleteFile(m.names[m.idx])
+		err := m.manager.DeleteFile(m.batch.CurrentFile())
 		if err != nil {
 			return ErrorMsg{
 				Err: err,
@@ -91,8 +91,8 @@ func handleProcessingeState(m Model, msg tea.Msg) (Model, tea.Cmd) {
 		m.errMsg = msg.Err.Error()
 		m.state = ErrorState
 	case SuccessMsg:
-		m.idx++
-		if m.idx >= len(m.names) {
+		m.batch.NextFile()
+		if m.batch.IsComplete() {
 			m.state = EndState
 		} else {
 			m.state = FileManageState

@@ -1,5 +1,7 @@
 package tui
 
+import "github.com/rycln/filer/internal/domain"
+
 type state int
 
 const (
@@ -21,18 +23,15 @@ type FileManager interface {
 
 type Model struct {
 	state   state
-	total   int
-	idx     int
 	errMsg  string
-	names   []string
+	batch   *domain.FileBatch
 	manager FileManager
 }
 
-func InitialRootModel(names []string, manager FileManager) Model {
+func InitialRootModel(batch *domain.FileBatch, manager FileManager) Model {
 	return Model{
 		state:   FileManageState,
-		total:   len(names),
-		names:   names,
+		batch:   batch,
 		manager: manager,
 	}
 }

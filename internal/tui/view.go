@@ -23,8 +23,8 @@ func (m Model) View() string {
 func (m Model) fileManageView() string {
 	var s strings.Builder
 
-	s.WriteString(fmt.Sprintf("[%d/%d]\n\n", m.idx+1, m.total))
-	s.WriteString(fmt.Sprintf("File: %s\n\n", m.names[m.idx]))
+	s.WriteString(fmt.Sprintf("[%d/%d]\n\n", m.batch.Progress(), m.batch.TotalFiles()))
+	s.WriteString(fmt.Sprintf("File: %s\n\n", m.batch.CurrentFile()))
 	s.WriteString("[K]eep, [D]elete, [S]kip, [Q]uit? ")
 
 	return s.String()
@@ -33,15 +33,15 @@ func (m Model) fileManageView() string {
 func (m Model) processingView() string {
 	var s strings.Builder
 
-	s.WriteString(fmt.Sprintf("[%d/%d]\n\n", m.idx+1, m.total))
-	s.WriteString(fmt.Sprintf("File: %s\n\n", m.names[m.idx]))
+	s.WriteString(fmt.Sprintf("[%d/%d]\n\n", m.batch.Progress(), m.batch.TotalFiles()))
+	s.WriteString(fmt.Sprintf("File: %s\n\n", m.batch.CurrentFile()))
 	s.WriteString("Processing...\n")
 
 	return s.String()
 }
 
 func (m Model) endView() string {
-	return fmt.Sprintf("Completed! Processed %d files.\nPress any key to exit...\n", m.total)
+	return fmt.Sprintf("Completed! Processed %d files.\nPress any key to exit...\n", m.batch.TotalFiles())
 }
 
 func (m Model) errorView() string {
