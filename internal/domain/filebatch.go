@@ -28,7 +28,7 @@ func (b *FileBatch) IsComplete() bool {
 }
 
 func (b *FileBatch) Progress() int {
-	return b.idx + 1
+	return b.idx
 }
 
 func (b *FileBatch) TotalFiles() int {
