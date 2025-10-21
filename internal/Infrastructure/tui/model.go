@@ -28,7 +28,7 @@ type Model struct {
 	manager FileManager
 }
 
-func InitialRootModel(batch *domain.FileBatch, manager FileManager) Model {
+func InitialModel(batch *domain.FileBatch, manager FileManager) Model {
 	return Model{
 		state:   FileManageState,
 		batch:   batch,

@@ -11,13 +11,13 @@ func (m Model) Init() tea.Cmd {
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch m.state {
 	case FileManageState:
-		handleFileManageState(m, msg)
+		return handleFileManageState(m, msg)
 	case ProcessingState:
-		handleProcessingeState(m, msg)
+		return handleProcessingState(m, msg)
 	case EndState:
-		handleEndState(m, msg)
+		return handleEndState(m, msg)
 	case ErrorState:
-		handleErrorState(m, msg)
+		return handleErrorState(m, msg)
 	}
 
 	return m, nil
@@ -41,7 +41,11 @@ func handleFileManageState(m Model, msg tea.Msg) (Model, tea.Cmd) {
 				return m, m.delete()
 			case "s":
 				m.batch.NextFile()
-				return m, nil
+				if m.batch.IsComplete() {
+					m.state = EndState
+				} else {
+					m.state = FileManageState
+				}
 			}
 		}
 	}
@@ -75,7 +79,7 @@ func (m Model) delete() tea.Cmd {
 	}
 }
 
-func handleProcessingeState(m Model, msg tea.Msg) (Model, tea.Cmd) {
+func handleProcessingState(m Model, msg tea.Msg) (Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.Type {
