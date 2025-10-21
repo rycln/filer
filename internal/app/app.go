@@ -18,7 +18,10 @@ type App struct {
 }
 
 func New() (*App, error) {
-	cfg := config.NewConfigBuilder().WithFlagParsing().Build()
+	cfg, err := config.NewConfigBuilder().WithFlagParsing().Build()
+	if err != nil {
+		return nil, err
+	}
 
 	filesys, err := filesystem.NewLocal(cfg.Source, cfg.Target)
 	if err != nil {
