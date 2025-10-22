@@ -1,6 +1,6 @@
 # Filer
 
-Interactive REPL utility for quick file sorting through a "keep or delete" process.
+Interactive TUI utility for quick file sorting through a "keep or delete" process.
 
 ## What is it?
 
@@ -23,11 +23,14 @@ filer [-s SOURCE_DIR] [-t TARGET_DIR] [-p REGEX_PATTERN]
 When running, you'll see:
 
 ```bash
-[1/1000]
+📁 File Manager
 
-File: photo001.jpg
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 0/10 (0.0%)
 
-[K]eep, [D]elete, [S]kip, [Q]uit? 
+📄 some_file.md
+
+
+❓ Action: Keep ┃ Delete ┃ Skip ┃ Quit
 ```
 
 - k - Keep the file (moves to target_dir if specified)
@@ -39,6 +42,21 @@ File: photo001.jpg
 
 Deletion is permanent - use with caution!
 
+## Examples
+
+```bash
+# Sort all files in current directory
+filer
+
+# Sort only JPEG files in Downloads, move kept files to Pictures
+filer -s ~/Downloads -t ~/Pictures -p "\.jpg$"
+
+# Sort files starting with "project_" in current directory
+filer -p "^project_"
+
+# Sort all files in Documents, keep them in place (just delete unwanted)
+filer -s ~/Documents
+```
 
 
 

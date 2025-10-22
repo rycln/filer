@@ -21,8 +21,20 @@ THE SOFTWARE.
 */
 package main
 
-import "github.com/rycln/filer/cmd"
+import (
+	"log"
+
+	"github.com/rycln/filer/internal/app"
+)
 
 func main() {
-	cmd.Execute()
+	app, err := app.New()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = app.Run()
+	if err != nil {
+		log.Fatal(err)
+	}
 }
