@@ -1,5 +1,7 @@
 package usecases
 
+//go:generate mockgen -source=$GOFILE -destination=./mocks/mock_$GOFILE -package=mocks
+
 type FileSystem interface {
 	KeepFile(string) error
 	DeleteFile(string) error
