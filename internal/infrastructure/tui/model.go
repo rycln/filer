@@ -2,6 +2,8 @@ package tui
 
 import "github.com/rycln/filer/internal/domain"
 
+//go:generate mockgen -source=$GOFILE -destination=./mocks/mock_$GOFILE -package=mocks
+
 type state int
 
 const (
