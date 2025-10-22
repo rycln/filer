@@ -38,7 +38,10 @@ func New() (*App, error) {
 		return nil, err
 	}
 
-	batch := domain.NewFileBatch(filtered)
+	batch, err := domain.NewFileBatch(filtered)
+	if err != nil {
+		return nil, err
+	}
 	fileProcessor := usecases.NewFileProcessor(filesys)
 
 	p := tea.NewProgram(tui.InitialModel(batch, fileProcessor))

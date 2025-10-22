@@ -1,15 +1,21 @@
 package domain
 
+import "fmt"
+
 type FileBatch struct {
 	filenames []string
 	idx       int
 }
 
-func NewFileBatch(files []string) *FileBatch {
+func NewFileBatch(files []string) (*FileBatch, error) {
+	if len(files) == 0 {
+		return nil, fmt.Errorf("no files to process")
+	}
+
 	return &FileBatch{
 		filenames: files,
 		idx:       0,
-	}
+	}, nil
 }
 
 func (b *FileBatch) CurrentFile() string {

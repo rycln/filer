@@ -17,7 +17,10 @@ func TestInitialModel(t *testing.T) {
 		defer ctrl.Finish()
 
 		mockManager := mocks.NewMockFileManager(ctrl)
-		batch := domain.NewFileBatch([]string{"file1.txt", "file2.txt"})
+		batch, err := domain.NewFileBatch([]string{"file1.txt", "file2.txt"})
+		if err != nil {
+			t.Fatalf("Failed to create batch: %v", err)
+		}
 
 		model := InitialModel(batch, mockManager)
 
@@ -42,7 +45,10 @@ func TestModel_Init(t *testing.T) {
 		defer ctrl.Finish()
 
 		mockManager := mocks.NewMockFileManager(ctrl)
-		batch := domain.NewFileBatch([]string{"file1.txt"})
+		batch, err := domain.NewFileBatch([]string{"file1.txt"})
+		if err != nil {
+			t.Fatalf("Failed to create batch: %v", err)
+		}
 		model := InitialModel(batch, mockManager)
 
 		cmd := model.Init()
@@ -59,7 +65,10 @@ func TestModel_Update_FileManageState(t *testing.T) {
 		defer ctrl.Finish()
 
 		mockManager := mocks.NewMockFileManager(ctrl)
-		batch := domain.NewFileBatch([]string{"file1.txt"})
+		batch, err := domain.NewFileBatch([]string{"file1.txt"})
+		if err != nil {
+			t.Fatalf("Failed to create batch: %v", err)
+		}
 		model := InitialModel(batch, mockManager)
 
 		msg := tea.KeyMsg{Type: tea.KeyCtrlC}
@@ -79,7 +88,10 @@ func TestModel_Update_FileManageState(t *testing.T) {
 		defer ctrl.Finish()
 
 		mockManager := mocks.NewMockFileManager(ctrl)
-		batch := domain.NewFileBatch([]string{"file1.txt"})
+		batch, err := domain.NewFileBatch([]string{"file1.txt"})
+		if err != nil {
+			t.Fatalf("Failed to create batch: %v", err)
+		}
 		model := InitialModel(batch, mockManager)
 
 		msg := tea.KeyMsg{
@@ -102,7 +114,10 @@ func TestModel_Update_FileManageState(t *testing.T) {
 		defer ctrl.Finish()
 
 		mockManager := mocks.NewMockFileManager(ctrl)
-		batch := domain.NewFileBatch([]string{"file1.txt"})
+		batch, err := domain.NewFileBatch([]string{"file1.txt"})
+		if err != nil {
+			t.Fatalf("Failed to create batch: %v", err)
+		}
 		model := InitialModel(batch, mockManager)
 
 		msg := tea.KeyMsg{
@@ -125,7 +140,10 @@ func TestModel_Update_FileManageState(t *testing.T) {
 		defer ctrl.Finish()
 
 		mockManager := mocks.NewMockFileManager(ctrl)
-		batch := domain.NewFileBatch([]string{"file1.txt"})
+		batch, err := domain.NewFileBatch([]string{"file1.txt"})
+		if err != nil {
+			t.Fatalf("Failed to create batch: %v", err)
+		}
 		model := InitialModel(batch, mockManager)
 
 		msg := tea.KeyMsg{
@@ -148,7 +166,10 @@ func TestModel_Update_FileManageState(t *testing.T) {
 		defer ctrl.Finish()
 
 		mockManager := mocks.NewMockFileManager(ctrl)
-		batch := domain.NewFileBatch([]string{"file1.txt", "file2.txt"})
+		batch, err := domain.NewFileBatch([]string{"file1.txt", "file2.txt"})
+		if err != nil {
+			t.Fatalf("Failed to create batch: %v", err)
+		}
 		model := InitialModel(batch, mockManager)
 
 		initialProgress := batch.Progress()
@@ -176,7 +197,10 @@ func TestModel_Update_FileManageState(t *testing.T) {
 		defer ctrl.Finish()
 
 		mockManager := mocks.NewMockFileManager(ctrl)
-		batch := domain.NewFileBatch([]string{"file1.txt"})
+		batch, err := domain.NewFileBatch([]string{"file1.txt"})
+		if err != nil {
+			t.Fatalf("Failed to create batch: %v", err)
+		}
 		model := InitialModel(batch, mockManager)
 
 		msg := tea.KeyMsg{
@@ -204,7 +228,10 @@ func TestModel_Update_ProcessingState(t *testing.T) {
 		defer ctrl.Finish()
 
 		mockManager := mocks.NewMockFileManager(ctrl)
-		batch := domain.NewFileBatch([]string{"file1.txt", "file2.txt"})
+		batch, err := domain.NewFileBatch([]string{"file1.txt", "file2.txt"})
+		if err != nil {
+			t.Fatalf("Failed to create batch: %v", err)
+		}
 		model := InitialModel(batch, mockManager)
 		model.state = ProcessingState
 
@@ -229,7 +256,10 @@ func TestModel_Update_ProcessingState(t *testing.T) {
 		defer ctrl.Finish()
 
 		mockManager := mocks.NewMockFileManager(ctrl)
-		batch := domain.NewFileBatch([]string{"file1.txt"})
+		batch, err := domain.NewFileBatch([]string{"file1.txt"})
+		if err != nil {
+			t.Fatalf("Failed to create batch: %v", err)
+		}
 		model := InitialModel(batch, mockManager)
 		model.state = ProcessingState
 
@@ -253,7 +283,10 @@ func TestModel_Update_ProcessingState(t *testing.T) {
 		defer ctrl.Finish()
 
 		mockManager := mocks.NewMockFileManager(ctrl)
-		batch := domain.NewFileBatch([]string{"file1.txt"})
+		batch, err := domain.NewFileBatch([]string{"file1.txt"})
+		if err != nil {
+			t.Fatalf("Failed to create batch: %v", err)
+		}
 		model := InitialModel(batch, mockManager)
 		model.state = ProcessingState
 
@@ -278,7 +311,10 @@ func TestModel_Update_ProcessingState(t *testing.T) {
 		defer ctrl.Finish()
 
 		mockManager := mocks.NewMockFileManager(ctrl)
-		batch := domain.NewFileBatch([]string{"file1.txt"})
+		batch, err := domain.NewFileBatch([]string{"file1.txt"})
+		if err != nil {
+			t.Fatalf("Failed to create batch: %v", err)
+		}
 		model := InitialModel(batch, mockManager)
 		model.state = ProcessingState
 
@@ -301,7 +337,10 @@ func TestModel_Update_EndState(t *testing.T) {
 		defer ctrl.Finish()
 
 		mockManager := mocks.NewMockFileManager(ctrl)
-		batch := domain.NewFileBatch([]string{"file1.txt"})
+		batch, err := domain.NewFileBatch([]string{"file1.txt"})
+		if err != nil {
+			t.Fatalf("Failed to create batch: %v", err)
+		}
 		model := InitialModel(batch, mockManager)
 		model.state = EndState
 
@@ -324,7 +363,10 @@ func TestModel_Update_ErrorState(t *testing.T) {
 		defer ctrl.Finish()
 
 		mockManager := mocks.NewMockFileManager(ctrl)
-		batch := domain.NewFileBatch([]string{"file1.txt"})
+		batch, err := domain.NewFileBatch([]string{"file1.txt"})
+		if err != nil {
+			t.Fatalf("Failed to create batch: %v", err)
+		}
 		model := InitialModel(batch, mockManager)
 		model.state = ErrorState
 		model.errMsg = "test error"
@@ -348,7 +390,10 @@ func TestModel_Keep_Delete_Commands(t *testing.T) {
 		defer ctrl.Finish()
 
 		mockManager := mocks.NewMockFileManager(ctrl)
-		batch := domain.NewFileBatch([]string{"file1.txt"})
+		batch, err := domain.NewFileBatch([]string{"file1.txt"})
+		if err != nil {
+			t.Fatalf("Failed to create batch: %v", err)
+		}
 		model := InitialModel(batch, mockManager)
 
 		mockManager.EXPECT().Keep("file1.txt").Return(nil)
@@ -358,6 +403,7 @@ func TestModel_Keep_Delete_Commands(t *testing.T) {
 
 		switch msg.(type) {
 		case SuccessMsg:
+			// Expected
 		case ErrorMsg:
 			t.Error("Expected SuccessMsg, got ErrorMsg")
 		default:
@@ -370,7 +416,10 @@ func TestModel_Keep_Delete_Commands(t *testing.T) {
 		defer ctrl.Finish()
 
 		mockManager := mocks.NewMockFileManager(ctrl)
-		batch := domain.NewFileBatch([]string{"file1.txt"})
+		batch, err := domain.NewFileBatch([]string{"file1.txt"})
+		if err != nil {
+			t.Fatalf("Failed to create batch: %v", err)
+		}
 		model := InitialModel(batch, mockManager)
 
 		expectedErr := errors.New("keep failed")
@@ -396,7 +445,10 @@ func TestModel_Keep_Delete_Commands(t *testing.T) {
 		defer ctrl.Finish()
 
 		mockManager := mocks.NewMockFileManager(ctrl)
-		batch := domain.NewFileBatch([]string{"file1.txt"})
+		batch, err := domain.NewFileBatch([]string{"file1.txt"})
+		if err != nil {
+			t.Fatalf("Failed to create batch: %v", err)
+		}
 		model := InitialModel(batch, mockManager)
 
 		mockManager.EXPECT().Delete("file1.txt").Return(nil)
@@ -406,6 +458,7 @@ func TestModel_Keep_Delete_Commands(t *testing.T) {
 
 		switch msg.(type) {
 		case SuccessMsg:
+			// Expected
 		case ErrorMsg:
 			t.Error("Expected SuccessMsg, got ErrorMsg")
 		default:
@@ -418,7 +471,10 @@ func TestModel_Keep_Delete_Commands(t *testing.T) {
 		defer ctrl.Finish()
 
 		mockManager := mocks.NewMockFileManager(ctrl)
-		batch := domain.NewFileBatch([]string{"file1.txt"})
+		batch, err := domain.NewFileBatch([]string{"file1.txt"})
+		if err != nil {
+			t.Fatalf("Failed to create batch: %v", err)
+		}
 		model := InitialModel(batch, mockManager)
 
 		expectedErr := errors.New("delete failed")
@@ -446,7 +502,10 @@ func TestModel_View(t *testing.T) {
 		defer ctrl.Finish()
 
 		mockManager := mocks.NewMockFileManager(ctrl)
-		batch := domain.NewFileBatch([]string{"file1.txt", "file2.txt"})
+		batch, err := domain.NewFileBatch([]string{"file1.txt", "file2.txt"})
+		if err != nil {
+			t.Fatalf("Failed to create batch: %v", err)
+		}
 		model := InitialModel(batch, mockManager)
 
 		view := model.View()
@@ -467,7 +526,10 @@ func TestModel_View(t *testing.T) {
 		defer ctrl.Finish()
 
 		mockManager := mocks.NewMockFileManager(ctrl)
-		batch := domain.NewFileBatch([]string{"file1.txt"})
+		batch, err := domain.NewFileBatch([]string{"file1.txt"})
+		if err != nil {
+			t.Fatalf("Failed to create batch: %v", err)
+		}
 		model := InitialModel(batch, mockManager)
 		model.state = ProcessingState
 
@@ -486,7 +548,10 @@ func TestModel_View(t *testing.T) {
 		defer ctrl.Finish()
 
 		mockManager := mocks.NewMockFileManager(ctrl)
-		batch := domain.NewFileBatch([]string{"file1.txt"})
+		batch, err := domain.NewFileBatch([]string{"file1.txt"})
+		if err != nil {
+			t.Fatalf("Failed to create batch: %v", err)
+		}
 		model := InitialModel(batch, mockManager)
 		model.state = EndState
 
@@ -505,7 +570,10 @@ func TestModel_View(t *testing.T) {
 		defer ctrl.Finish()
 
 		mockManager := mocks.NewMockFileManager(ctrl)
-		batch := domain.NewFileBatch([]string{"file1.txt"})
+		batch, err := domain.NewFileBatch([]string{"file1.txt"})
+		if err != nil {
+			t.Fatalf("Failed to create batch: %v", err)
+		}
 		model := InitialModel(batch, mockManager)
 		model.state = ErrorState
 		model.errMsg = "test error message"
@@ -522,27 +590,15 @@ func TestModel_View(t *testing.T) {
 }
 
 func TestModel_CreateProgressBar(t *testing.T) {
-	t.Run("should return empty string for zero total", func(t *testing.T) {
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		mockManager := mocks.NewMockFileManager(ctrl)
-		batch := domain.NewFileBatch([]string{})
-		model := InitialModel(batch, mockManager)
-
-		progressBar := model.createProgressBar(0, 0)
-
-		if progressBar != "" {
-			t.Errorf("Expected empty progress bar, got '%s'", progressBar)
-		}
-	})
-
 	t.Run("should create progress bar for partial completion", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
 
 		mockManager := mocks.NewMockFileManager(ctrl)
-		batch := domain.NewFileBatch([]string{})
+		batch, err := domain.NewFileBatch([]string{"file1.txt", "file2.txt", "file3.txt"})
+		if err != nil {
+			t.Fatalf("Failed to create batch: %v", err)
+		}
 		model := InitialModel(batch, mockManager)
 
 		progressBar := model.createProgressBar(3, 10)
@@ -560,7 +616,10 @@ func TestModel_CreateProgressBar(t *testing.T) {
 		defer ctrl.Finish()
 
 		mockManager := mocks.NewMockFileManager(ctrl)
-		batch := domain.NewFileBatch([]string{})
+		batch, err := domain.NewFileBatch([]string{"file1.txt", "file2.txt", "file3.txt", "file4.txt", "file5.txt"})
+		if err != nil {
+			t.Fatalf("Failed to create batch: %v", err)
+		}
 		model := InitialModel(batch, mockManager)
 
 		progressBar := model.createProgressBar(5, 5)

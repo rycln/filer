@@ -1,27 +1,33 @@
 package domain
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestNewFileBatch(t *testing.T) {
-	t.Run("should create batch with empty files", func(t *testing.T) {
+	t.Run("should return error for empty files", func(t *testing.T) {
 		files := []string{}
-		batch := NewFileBatch(files)
+		batch, err := NewFileBatch(files)
 
-		if batch == nil {
-			t.Error("Expected non-nil batch")
+		if err == nil {
+			t.Error("Expected error for empty files")
 		}
-		if batch.TotalFiles() != 0 {
-			t.Errorf("Expected total files 0, got %d", batch.TotalFiles())
+		if batch != nil {
+			t.Error("Expected nil batch when error occurs")
 		}
-		if !batch.IsComplete() {
-			t.Error("Expected batch to be complete")
+		expectedErr := "no files to process"
+		if err.Error() != expectedErr {
+			t.Errorf("Expected error '%s', got '%v'", expectedErr, err)
 		}
 	})
 
 	t.Run("should create batch with single file", func(t *testing.T) {
 		files := []string{"file1.txt"}
-		batch := NewFileBatch(files)
+		batch, err := NewFileBatch(files)
 
+		if err != nil {
+			t.Errorf("Expected no error, got %v", err)
+		}
 		if batch == nil {
 			t.Error("Expected non-nil batch")
 		}
@@ -35,8 +41,11 @@ func TestNewFileBatch(t *testing.T) {
 
 	t.Run("should create batch with multiple files", func(t *testing.T) {
 		files := []string{"file1.txt", "file2.txt", "file3.txt"}
-		batch := NewFileBatch(files)
+		batch, err := NewFileBatch(files)
 
+		if err != nil {
+			t.Errorf("Expected no error, got %v", err)
+		}
 		if batch == nil {
 			t.Error("Expected non-nil batch")
 		}
@@ -50,18 +59,13 @@ func TestNewFileBatch(t *testing.T) {
 }
 
 func TestFileBatch_CurrentFile(t *testing.T) {
-	t.Run("should return empty string when batch is empty", func(t *testing.T) {
-		batch := NewFileBatch([]string{})
-		current := batch.CurrentFile()
-
-		if current != "" {
-			t.Errorf("Expected empty string, got '%s'", current)
-		}
-	})
-
 	t.Run("should return first file initially", func(t *testing.T) {
 		files := []string{"file1.txt", "file2.txt"}
-		batch := NewFileBatch(files)
+		batch, err := NewFileBatch(files)
+		if err != nil {
+			t.Fatalf("Failed to create batch: %v", err)
+		}
+
 		current := batch.CurrentFile()
 
 		if current != "file1.txt" {
@@ -71,7 +75,11 @@ func TestFileBatch_CurrentFile(t *testing.T) {
 
 	t.Run("should return empty string after completion", func(t *testing.T) {
 		files := []string{"file1.txt"}
-		batch := NewFileBatch(files)
+		batch, err := NewFileBatch(files)
+		if err != nil {
+			t.Fatalf("Failed to create batch: %v", err)
+		}
+
 		batch.NextFile()
 
 		current := batch.CurrentFile()
@@ -82,7 +90,10 @@ func TestFileBatch_CurrentFile(t *testing.T) {
 
 	t.Run("should return correct file after multiple next operations", func(t *testing.T) {
 		files := []string{"file1.txt", "file2.txt", "file3.txt"}
-		batch := NewFileBatch(files)
+		batch, err := NewFileBatch(files)
+		if err != nil {
+			t.Fatalf("Failed to create batch: %v", err)
+		}
 
 		batch.NextFile()
 		current := batch.CurrentFile()
@@ -99,20 +110,12 @@ func TestFileBatch_CurrentFile(t *testing.T) {
 }
 
 func TestFileBatch_NextFile(t *testing.T) {
-	t.Run("should increment index on empty batch", func(t *testing.T) {
-		batch := NewFileBatch([]string{})
-		initialProgress := batch.Progress()
-
-		batch.NextFile()
-
-		if batch.Progress() != initialProgress+1 {
-			t.Error("Expected progress to increment")
-		}
-	})
-
 	t.Run("should move to next file in sequence", func(t *testing.T) {
 		files := []string{"file1.txt", "file2.txt", "file3.txt"}
-		batch := NewFileBatch(files)
+		batch, err := NewFileBatch(files)
+		if err != nil {
+			t.Fatalf("Failed to create batch: %v", err)
+		}
 
 		if batch.CurrentFile() != "file1.txt" {
 			t.Error("Should start with first file")
@@ -131,7 +134,10 @@ func TestFileBatch_NextFile(t *testing.T) {
 
 	t.Run("should handle multiple next operations beyond bounds", func(t *testing.T) {
 		files := []string{"file1.txt"}
-		batch := NewFileBatch(files)
+		batch, err := NewFileBatch(files)
+		if err != nil {
+			t.Fatalf("Failed to create batch: %v", err)
+		}
 
 		batch.NextFile()
 		batch.NextFile()
@@ -147,16 +153,12 @@ func TestFileBatch_NextFile(t *testing.T) {
 }
 
 func TestFileBatch_IsComplete(t *testing.T) {
-	t.Run("should be complete for empty batch", func(t *testing.T) {
-		batch := NewFileBatch([]string{})
-
-		if !batch.IsComplete() {
-			t.Error("Expected empty batch to be complete")
-		}
-	})
-
 	t.Run("should not be complete for non-empty batch initially", func(t *testing.T) {
-		batch := NewFileBatch([]string{"file1.txt"})
+		files := []string{"file1.txt"}
+		batch, err := NewFileBatch(files)
+		if err != nil {
+			t.Fatalf("Failed to create batch: %v", err)
+		}
 
 		if batch.IsComplete() {
 			t.Error("Expected non-empty batch to not be complete initially")
@@ -165,7 +167,10 @@ func TestFileBatch_IsComplete(t *testing.T) {
 
 	t.Run("should become complete after processing all files", func(t *testing.T) {
 		files := []string{"file1.txt", "file2.txt"}
-		batch := NewFileBatch(files)
+		batch, err := NewFileBatch(files)
+		if err != nil {
+			t.Fatalf("Failed to create batch: %v", err)
+		}
 
 		if batch.IsComplete() {
 			t.Error("Should not be complete initially")
@@ -184,7 +189,11 @@ func TestFileBatch_IsComplete(t *testing.T) {
 
 	t.Run("should remain complete after additional next operations", func(t *testing.T) {
 		files := []string{"file1.txt"}
-		batch := NewFileBatch(files)
+		batch, err := NewFileBatch(files)
+		if err != nil {
+			t.Fatalf("Failed to create batch: %v", err)
+		}
+
 		batch.NextFile()
 		batch.NextFile()
 
@@ -197,7 +206,10 @@ func TestFileBatch_IsComplete(t *testing.T) {
 func TestFileBatch_Progress(t *testing.T) {
 	t.Run("should start at zero progress", func(t *testing.T) {
 		files := []string{"file1.txt", "file2.txt", "file3.txt"}
-		batch := NewFileBatch(files)
+		batch, err := NewFileBatch(files)
+		if err != nil {
+			t.Fatalf("Failed to create batch: %v", err)
+		}
 
 		if batch.Progress() != 0 {
 			t.Errorf("Expected progress 0, got %d", batch.Progress())
@@ -206,7 +218,10 @@ func TestFileBatch_Progress(t *testing.T) {
 
 	t.Run("should increment progress with next operations", func(t *testing.T) {
 		files := []string{"file1.txt", "file2.txt", "file3.txt"}
-		batch := NewFileBatch(files)
+		batch, err := NewFileBatch(files)
+		if err != nil {
+			t.Fatalf("Failed to create batch: %v", err)
+		}
 
 		batch.NextFile()
 		if batch.Progress() != 1 {
@@ -221,7 +236,10 @@ func TestFileBatch_Progress(t *testing.T) {
 
 	t.Run("should handle progress beyond file count", func(t *testing.T) {
 		files := []string{"file1.txt"}
-		batch := NewFileBatch(files)
+		batch, err := NewFileBatch(files)
+		if err != nil {
+			t.Fatalf("Failed to create batch: %v", err)
+		}
 
 		batch.NextFile()
 		batch.NextFile()
@@ -234,16 +252,12 @@ func TestFileBatch_Progress(t *testing.T) {
 }
 
 func TestFileBatch_TotalFiles(t *testing.T) {
-	t.Run("should return zero for empty batch", func(t *testing.T) {
-		batch := NewFileBatch([]string{})
-
-		if batch.TotalFiles() != 0 {
-			t.Errorf("Expected 0 total files, got %d", batch.TotalFiles())
-		}
-	})
-
 	t.Run("should return correct count for single file", func(t *testing.T) {
-		batch := NewFileBatch([]string{"file1.txt"})
+		files := []string{"file1.txt"}
+		batch, err := NewFileBatch(files)
+		if err != nil {
+			t.Fatalf("Failed to create batch: %v", err)
+		}
 
 		if batch.TotalFiles() != 1 {
 			t.Errorf("Expected 1 total file, got %d", batch.TotalFiles())
@@ -252,7 +266,10 @@ func TestFileBatch_TotalFiles(t *testing.T) {
 
 	t.Run("should return correct count for multiple files", func(t *testing.T) {
 		files := []string{"a.txt", "b.txt", "c.txt", "d.txt", "e.txt"}
-		batch := NewFileBatch(files)
+		batch, err := NewFileBatch(files)
+		if err != nil {
+			t.Fatalf("Failed to create batch: %v", err)
+		}
 
 		if batch.TotalFiles() != 5 {
 			t.Errorf("Expected 5 total files, got %d", batch.TotalFiles())
@@ -261,7 +278,11 @@ func TestFileBatch_TotalFiles(t *testing.T) {
 
 	t.Run("should maintain consistent total files count after operations", func(t *testing.T) {
 		files := []string{"file1.txt", "file2.txt"}
-		batch := NewFileBatch(files)
+		batch, err := NewFileBatch(files)
+		if err != nil {
+			t.Fatalf("Failed to create batch: %v", err)
+		}
+
 		initialTotal := batch.TotalFiles()
 
 		batch.NextFile()
